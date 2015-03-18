@@ -16,4 +16,3 @@
 * Is "bulletins" another name for "reports"? If no, what are bulletins?
 * By what fields can a reader search for bulletins?
 * Are there multiple systems? If yes, what defines a system?
-* 
