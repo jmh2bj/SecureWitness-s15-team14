@@ -15,5 +15,4 @@
 * Does someone have to be a user to see a public report?
 * Is "bulletins" another name for "reports"? If no, what are bulletins?
 * By what fields can a reader search for bulletins?
-* Are there multiple systems? If yes, the following questions also apply:
-    > what defines a system?
+* Are there multiple systems? If yes, what defines a system?
