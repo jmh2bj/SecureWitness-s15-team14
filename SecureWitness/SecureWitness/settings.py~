@@ -1,5 +1,5 @@
 """
-Django settings for mysite project.
+Django settings for SecureWitness project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'n4t6p6vmqqamck&dynw&27gufwbs=%eztmv8z^i^p_prkx=*js'
+SECRET_KEY = '%@nzz!w(r-_qoc%-7p=$rfsq6rhyu&40s%e1d)p&5fo4lg_o!b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polls',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,9 +48,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'mysite.urls'
+ROOT_URLCONF = 'SecureWitness.urls'
 
-WSGI_APPLICATION = 'mysite.wsgi.application'
+WSGI_APPLICATION = 'SecureWitness.wsgi.application'
 
 
 # Database
