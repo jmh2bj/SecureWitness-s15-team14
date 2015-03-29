@@ -9,5 +9,6 @@ urlpatterns = patterns('',
 
     (r'^registration/login', login),
     (r'^registration/create', views.add_user),
-    (r'^registration/confirm', views.confirm)
+    (r'^registration/confirm', views.confirm),
+    (r'^profile', views.profile)
 )
