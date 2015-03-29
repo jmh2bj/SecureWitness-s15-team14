@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib import auth
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission, User
 from registration.models import UserForm
 from django.http import HttpResponseRedirect, HttpResponse
 
@@ -34,4 +34,9 @@ def login(request):
 	return render(request, 'registration/login.html', {'form': form})
 
 def confirm(request):
-	return render(request, 'registration/confirm.html', {'user': request.user})
+	# how to add permissions to a user
+	# admin = Permission.objects.get(codename='admin')
+	# if request.user.is_authenticated():
+	# 	youser = User.objects.get(username=request.user.username)
+	# 	youser.user_permissions = [admin]
+	return render(request, 'registration/confirm.html', {'permissions': str(request.user.get_all_permissions())})
