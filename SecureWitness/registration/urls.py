@@ -7,8 +7,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'SecureWitness.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    (r'^registration/login', login),
+    (r'^registration/login', views.login),
     (r'^registration/create', views.add_user),
-    (r'^registration/confirm', views.confirm),
-    (r'^profile', views.profile)
+    (r'^registration/confirm', views.confirm)
 )
