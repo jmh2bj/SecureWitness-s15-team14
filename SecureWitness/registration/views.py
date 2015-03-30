@@ -8,7 +8,13 @@ def add_user(request):
 	if request.method == "POST":
 		form = UserForm(request.POST)
 		if form.is_valid():
-			newUser = User.objects.create_user(**form.cleaned_data)
+			users = User.objects.all()
+			if not users.exists():
+				admin = Permission.objects.get(codename='admin')
+				newUser = User.objects.create_user(**form.cleaned_data)
+				newUser.user_permissions = [admin]
+			else:
+				newUser = User.objects.create_user(**form.cleaned_data)
             # redirect, or however you want to get to the main view
 			return HttpResponseRedirect('confirm')
 	else:
