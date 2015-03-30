@@ -13,7 +13,7 @@
 {% if admin %}
 <form method="post" action="">
     {% csrf_token %}
-    {{ form }}
+    {{ form.name }}
     <input type="submit" value="Create new group" />
 </form>
 {% endif %}

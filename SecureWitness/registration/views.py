@@ -55,7 +55,7 @@ def logout(request):
 
 def groups(request):
 	if request.method == "POST":
-		Group.objects.create(request.POST['name'])
+		Group.objects.create(name=request.POST['name'])
 	info = {}
 	if not request.user.is_authenticated():
 		info['groups'] = ["no user logged in"]
@@ -63,7 +63,7 @@ def groups(request):
 		if request.user.has_perm('registration.admin'):
 			info['admin'] = True
 			info['groups'] = Group.objects.all()
-			info['form'] = GroupForm
+			info['form'] = GroupForm()
 		else:
 			info['groups'] = request.user.groups.all()
 
