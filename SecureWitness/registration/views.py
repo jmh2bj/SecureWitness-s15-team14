@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
 from registration.models import UserForm, GroupForm
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 
 def add_user(request):
 	if request.method == "POST":
@@ -65,9 +65,23 @@ def groups(request):
 			info['groups'] = Group.objects.all()
 			info['form'] = GroupForm
 		else:
-			info['groups'] = request.user.groups
+			info['groups'] = request.user.groups.all()
 
 	return render(request, 'groups.html', info)
 
 def groupinfo(request, groupname):
-	return HttpResponse(Group.objects.get(name=groupname))
+	if request.method == "POST" and request.user.has_perm('registration.admin'):
+		group = Group.objects.get(name=groupname)
+		newmember = User.objects.get(username=request.POST['username'])
+		newmember.groups.add(group)
+		return HttpResponseRedirect(groupname)
+	else:
+		namedgroup = request.user.groups.filter(name=groupname)
+		if namedgroup.exists() or request.user.has_perm('registration.admin'):
+			info = {}
+			info['admin'] = request.user.has_perm('registration.admin')
+			info['form'] = UserForm
+			info['groupusers'] = User.objects.filter(groups__name=groupname)
+			return render(request, 'groupinfo.html', info)
+		else:
+			return HttpResponseForbidden("forbidden")

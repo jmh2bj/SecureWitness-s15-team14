@@ -13,14 +13,13 @@
 {% if admin %}
 <form method="post" action="">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Create new group" />
+    User: {{ form.username }}
+    <input type="submit" value="add member to group" />
 </form>
 {% endif %}
-
-<p>Groups: </p>
-{% for group in groups %}
-<li><a href="/groups/{{ group }}">{{ group }}</a></li>
+<p>Members: </p>
+{% for user in groupusers %}
+<p> {{ user }} </p>
 {% endfor %}
 </body>
 </html>
