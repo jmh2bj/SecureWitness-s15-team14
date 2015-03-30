@@ -17,3 +17,8 @@ class UserForm(ModelForm):
 			'password': forms.PasswordInput(),
 		}
 		fields = ('username', 'email', 'password')
+
+class GroupForm(ModelForm):
+	class Meta:
+		model = Group
+		fields = ('name',)

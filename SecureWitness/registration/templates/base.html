@@ -2,15 +2,17 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="style.css" />
-    <title>{% block title %}My amazing site{% endblock %}</title>
+    <title>{% block title %}SecureWitness{% endblock %}</title>
 </head>
 
 <body>
     <div id="sidebar">
         {% block sidebar %}
         <ul>
-            <li><a href="/registration/login">Home</a></li>
-            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/registration/login">Login</a></li>
+            <li><a href="/registration/logout">Logout</a></li>
+            <li><a href="/registration/confirm">Profile</a></li>
+            <li><a href="/groups">Groups</a></li>
         </ul>
         {% endblock %}
     </div>
