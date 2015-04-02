@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
-from registration.models import UserForm, GroupForm
+from registration.models import UserForm, GroupForm, ReportForm, Report
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 
 def add_user(request):
@@ -36,11 +36,6 @@ def login(request):
 	return render(request, 'registration/login.html', {'form': form})
 
 def confirm(request):
-	# how to add permissions to a user
-	# admin = Permission.objects.get(codename='admin')
-	# if request.user.is_authenticated():
-	# 	youser = User.objects.get(username=request.user.username)
-	# 	youser.user_permissions = [admin]
 	permissions = ""
 	if not request.user.is_authenticated():
 		permissions = "no user logged in"
@@ -53,8 +48,42 @@ def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect('login')
 
+def reports(request):
+	info = {}
+	if request.method == "POST" and request.user.is_authenticated():
+		info['form'] = ReportForm(request.POST)
+		newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], rep_date=request.POST['rep_date'], keywords=request.POST['keywords'], isPublic=request.POST['isPublic'])
+		if 'file' in request.POST:
+			newReport.file = request.POST['file']
+		if 'allowed_groups' in request.POST:
+			newReport.allowed_groups = request.POST['allowed_groups']
+		if 'allowed_users' in request.POST:
+			newReport.allowed_users = request.POST['allowed_users']
+	else:
+		info['form'] = ReportForm()
+	if not request.user.is_authenticated():
+		info['reports'] = ["no user logged in"]
+		info['user'] = False
+	else:
+		info['user'] = True
+		info['reports'] = Report.objects.filter(owner=request.user)
+
+	return render(request, 'reports.html', info)
+
+def reportinfo(request, pk):
+	report = get_object_or_404(Report, pk=pk)
+	info = {}
+	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
+		placeholder = "update reports here"
+		#update reports
+	if report.owner == request.user:
+		info['form'] = ReportForm(instance=report)
+	else:
+		return HttpResponseForbidden("forbidden")
+	return render(request, 'reportinfo.html', info)
+
 def groups(request):
-	if request.method == "POST":
+	if request.method == "POST" and request.user.is_superuser:
 		Group.objects.create(name=request.POST['name'])
 	info = {}
 	if not request.user.is_authenticated():

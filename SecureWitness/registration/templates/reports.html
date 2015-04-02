@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+{% if user %}
+<form method="post" action="">
+    {% csrf_token %}
+    {% for field in form %}
+    {{ field.label_tag }}
+    {{ field }} <p/>
+    {% endfor %}
+    <input type="submit" value="Create new report" />
+</form>
+{% endif %}
+
+<p>Your Reports: </p>
+{% for report in reports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a></li>
+{% endfor %}
+</body>
+</html>
+
+{% endblock %}

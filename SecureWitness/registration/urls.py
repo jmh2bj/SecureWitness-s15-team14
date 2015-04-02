@@ -7,6 +7,8 @@ urlpatterns = patterns('',
     (r'^registration/create', views.add_user),
     (r'^registration/confirm', views.confirm),
     (r'^registration/logout', views.logout),
+    url(r'^reports/$', views.reports),
+    url(r'^reports/(?P<pk>[\w]+)', views.reportinfo),
     url(r'^groups/$', views.groups),
     url(r'^groups/(?P<groupname>[\w]+)', views.groupinfo)
 )
