@@ -13,13 +13,8 @@ class Report(models.Model):
 	keywords = models.CharField(max_length=500)
 	file = models.FileField(upload_to='reports', blank=True)
 	isPublic = models.BooleanField(default=True)
-
-
-class UserRoles(models.Model):
-	class Meta:
-		permissions = [
-            ("admin", "Is a SecureWitness Admin")
-        ]
+	allowed_users = models.ForeignKey(User) #individual users granted access to a report
+	allowed_groups = models.ForeignKey(Group) #groups whose members are granted access to a report
 
 class UserForm(ModelForm):
 	class Meta:

@@ -3,7 +3,6 @@ from django.contrib.auth.views import login, logout
 from registration import views
 
 urlpatterns = patterns('',
-
     (r'^registration/login', views.login),
     (r'^registration/create', views.add_user),
     (r'^registration/confirm', views.confirm),
