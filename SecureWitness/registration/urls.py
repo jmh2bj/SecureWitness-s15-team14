@@ -10,5 +10,7 @@ urlpatterns = patterns('',
     url(r'^reports/$', views.reports),
     url(r'^reports/(?P<pk>[\w]+)', views.reportinfo),
     url(r'^groups/$', views.groups),
-    url(r'^groups/(?P<groupname>[\w]+)', views.groupinfo)
+    url(r'^groups/(?P<groupname>[\w]+)', views.groupinfo),
+    (r'^searchform/$', views.searchform),
+    (r'^search/$', views.search),
 )

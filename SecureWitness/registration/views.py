@@ -114,3 +114,64 @@ def groupinfo(request, groupname):
 			return render(request, 'groupinfo.html', info)
 		else:
 			return HttpResponseForbidden("forbidden")
+
+def searchform(request):
+    user = request.GET.get("type")
+    report = request.GET.get("type2")
+    q = request.GET.get("q")
+    results = ""
+    if report:
+        if q:
+        # you may want to use `__istartswith' instead
+            results = Report.objects.filter(rep_title__istartswith=q)
+        else:
+       # you may want to return Customer.objects.none() instead
+            results = Report.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+
+    elif user:
+        if q:
+        # you may want to use `__istartswith' instead
+            results = User.objects.filter(username__istartswith=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    else:
+        results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+
+
+
+def search(request):
+    user = request.GET.get("type")
+    report = request.GET.get("type2")
+    q = request.GET.get("q")
+    results = ""
+    if report:
+        if q:
+        # you may want to use `__istartswith' instead
+            results = Report.objects.filter(rep_title__istartswith=q)
+        else:
+       # you may want to return Customer.objects.none() instead
+            results = Report.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+
+    elif user:
+        if q:
+        # you may want to use `__istartswith' instead
+            results = User.objects.filter(username__istartswith=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+    else:
+        results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    return render(request, "search.html")
