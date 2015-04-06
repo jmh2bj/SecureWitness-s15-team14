@@ -18,6 +18,9 @@ class Report(models.Model):
 	allowed_groups = models.ManyToManyField(Group, null=True) #groups whose members are granted access to a report
 	owner = models.ForeignKey(User, null=True)
 
+	def __str__(self):
+		return self.rep_title
+
 class UserForm(ModelForm):
 	class Meta:
 		password = forms.CharField(widget=forms.PasswordInput)
