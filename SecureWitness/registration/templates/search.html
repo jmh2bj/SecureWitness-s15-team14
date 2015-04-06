@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<p>Search Results: </p>
+{% for r in results %}
+    {% if report %}
+        <ul>
+            <li> {{ r.rep_title }} </li>
+                <p> {{ r.short_desc }}</p>
+        </ul>
+    {% endif %}
+
+    {% if user %}
+        <ul>
+            <li> {{ r }} </li>
+                <p> {{ r.email }}</p>
+        </ul>
+    {% endif %}
+{% endfor %}
+</body>
+</html>
+{% endblock %}
