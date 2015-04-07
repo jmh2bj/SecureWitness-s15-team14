@@ -16,18 +16,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Report',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('rep_title', models.CharField(max_length=200)),
                 ('rep_created', models.DateTimeField(verbose_name='date created', auto_now_add=True)),
                 ('short_desc', models.CharField(max_length=200)),
                 ('detailed_desc', models.CharField(max_length=2000)),
                 ('rep_date', models.DateTimeField(verbose_name='report date')),
                 ('keywords', models.CharField(max_length=500)),
-                ('file', models.FileField(blank=True, upload_to='reports')),
+                ('file', models.FileField(blank=True, null=True, upload_to='reports')),
                 ('isPublic', models.BooleanField(default=True)),
-                ('allowed_groups', models.ManyToManyField(to='auth.Group')),
-                ('allowed_users', models.ManyToManyField(related_name='allowed_users', to=settings.AUTH_USER_MODEL)),
-                ('owner', models.ForeignKey(unique=True, null=True, to=settings.AUTH_USER_MODEL)),
+                ('allowed_groups', models.ManyToManyField(null=True, to='auth.Group')),
+                ('allowed_users', models.ManyToManyField(to=settings.AUTH_USER_MODEL, null=True, related_name='allowed_users')),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },

@@ -73,13 +73,16 @@ def reports(request):
 def reportinfo(request, pk):
 	report = get_object_or_404(Report, pk=pk)
 	info = {}
-	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
-		placeholder = "update reports here"
-		#update reports
 	if report.owner == request.user:
 		info['form'] = ReportForm(instance=report)
 	else:
 		return HttpResponseForbidden("forbidden")
+	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
+		report_form = ReportForm(request.POST)
+		if report_form.is_valid():
+			report_form=ReportForm(request.POST, instance = report)
+			report_form.save()	
+		info['form'] = report_form
 	return render(request, 'reportinfo.html', info)
 
 def groups(request):

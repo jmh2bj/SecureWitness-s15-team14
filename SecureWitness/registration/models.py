@@ -14,8 +14,8 @@ class Report(models.Model):
 	keywords = models.CharField(max_length=500)
 	file = models.FileField(upload_to='reports', blank=True, null=True)
 	isPublic = models.BooleanField(default=True)
-	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True) #individual users granted access to a report
-	allowed_groups = models.ManyToManyField(Group, null=True) #groups whose members are granted access to a report
+	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True) #individual users granted access to a report
+	allowed_groups = models.ManyToManyField(Group, null=True, blank=True) #groups whose members are granted access to a report
 	owner = models.ForeignKey(User, null=True)
 
 	def __str__(self):
