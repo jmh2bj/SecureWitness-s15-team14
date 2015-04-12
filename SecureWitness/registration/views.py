@@ -1,8 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
-from registration.models import UserForm, GroupForm, ReportForm, Report
+from registration.models import UserForm, GroupForm, ReportForm, Report, FolderForm, Folder
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+
+def home(request):
+	return add_user(request)
 
 def add_user(request):
 	if request.method == "POST":
@@ -42,7 +45,7 @@ def confirm(request):
 	else:
 		permissions = str(request.user.get_all_permissions())
 	
-	return render(request, 'registration/confirm.html', {'permissions': permissions})
+	return render(request, 'registration/confirm.html', {'permissions': permissions, 'user': request.user})
 
 def logout(request):
 	auth.logout(request)
@@ -84,6 +87,45 @@ def reportinfo(request, pk):
 			report_form.save()	
 		info['form'] = report_form
 	return render(request, 'reportinfo.html', info)
+
+def folders(request):
+	info = {}
+	if request.method == "POST" and request.user.is_authenticated():
+		newFolder = Folder.objects.create(owner=request.user, name=request.POST['name'])
+	else:
+		info['form'] = FolderForm()
+	if not request.user.is_authenticated():
+		info['folders'] = ["no user logged in"]
+		info['user'] = False
+	else:
+		info['user'] = True
+		info['folders'] = Folder.objects.filter(owner=request.user)
+
+	return render(request, 'folders.html', info)
+
+def folderinfo(request, pk):
+	folder = get_object_or_404(Folder, pk=pk)
+	info = {}
+	if folder.owner == request.user:
+		info['form'] = FolderForm(instance = folder)
+		info['folders'] = folder.contained_folders.all()
+		info['reports'] = folder.contained_reports.all()
+	else:
+		return HttpResponseForbidden("forbidden")
+	if request.method == "POST" and request.user.is_authenticated() and folder.owner == request.user:
+		folder_form = FolderForm(request.POST)
+		folder.name = request.POST['name']
+		folder.save()
+		if 'folderadd' in request.POST:
+			folderadd = Folder.objects.filter(name=request.POST['folderadd'], owner=request.user)
+			if len(folderadd) > 0: 
+				folder.contained_folders.add(folderadd[0])
+		if 'reportadd' in request.POST:
+			reportadd = Report.objects.filter(rep_title=request.POST['reportadd'], owner=request.user)
+			if len(reportadd) > 0: 
+				folder.contained_reports.add(reportadd[0])
+		info['form'] = folder_form
+	return render(request, 'folderinfo.html', info)
 
 def groups(request):
 	if request.method == "POST" and request.user.is_superuser:

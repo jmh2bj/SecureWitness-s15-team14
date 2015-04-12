@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<form method="post" action="">
+    {% csrf_token %}
+    {% for field in form %}
+    {{ field.label_tag }}
+    {{ field }} <p/>
+    {% endfor %}
+    <input type="submit" value="Update Folder" />
+</form>
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-error">
+            	{{ field.label_tag }}
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-error">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
+{% for folder in folders %}
+<li><a href="/folders/{{ folder.pk }}">{{ folder.name }}</a></li>
+{% endfor %}
+{% for report in reports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a></li>
+{% endfor %}
+</body>
+</html>
+
+{% endblock %}

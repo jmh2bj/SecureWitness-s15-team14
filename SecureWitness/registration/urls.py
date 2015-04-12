@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^reports/(?P<pk>[\w]+)', views.reportinfo),
     url(r'^groups/$', views.groups),
     url(r'^groups/(?P<groupname>[\w]+)', views.groupinfo),
+    url(r'^folders/$', views.folders),
+    url(r'^folders/(?P<pk>[\w]+)', views.folderinfo),
     (r'^searchform/$', views.searchform),
     (r'^search/$', views.search),
 )
