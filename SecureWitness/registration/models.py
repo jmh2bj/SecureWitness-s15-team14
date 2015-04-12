@@ -21,6 +21,15 @@ class Report(models.Model):
 	def __str__(self):
 		return self.rep_title
 
+class Folder(models.Model):
+	name = models.CharField(max_length=200)
+	owner = models.ForeignKey(User, null=True)
+	contained_folders = models.ManyToManyField(Folder, null=True, blank=True)
+	contained_reports = models.ManyToManyField(Report, null=True, blank=True)
+
+	def __str__(self):
+		return self.name
+
 class UserForm(ModelForm):
 	class Meta:
 		password = forms.CharField(widget=forms.PasswordInput)
