@@ -9,10 +9,10 @@ class Report(models.Model):
 	short_desc = models.CharField("Short Description", max_length=200)
 	detailed_desc = models.CharField("Detailed Description", max_length=2000)
 	# location should be a reference to the folders, probably
-	#loc = models.CharField(max_length=200)
-	rep_date = models.DateTimeField('Report date')
-	keywords = models.CharField("Associated Keywords", max_length=500)
-	file = models.FileField(upload_to='reports', blank=True, null=True)
+	loc = models.CharField("Location", max_length=200, blank=True)
+	rep_date = models.DateTimeField('Report date', blank=True)
+	keywords = models.CharField("Associated Keywords", max_length=500, blank=True)
+	rep_file = models.FileField(upload_to='reports', blank=True, null=True)
 	isPublic = models.BooleanField("Public Report?" , default=True)
 	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True, verbose_name="Allowed Users") #individual users granted access to a report
 	allowed_groups = models.ManyToManyField(Group, null=True, blank=True, verbose_name="Allowed Groups") #groups whose members are granted access to a report
@@ -59,4 +59,4 @@ class GroupForm(ModelForm):
 class ReportForm(ModelForm):
 	class Meta:
 		model = Report
-		fields = ('rep_title', 'short_desc', 'detailed_desc', 'rep_date', 'keywords', 'file', 'isPublic', 'allowed_users', 'allowed_groups')
+		fields = ('rep_title', 'short_desc', 'detailed_desc', 'loc', 'rep_date', 'keywords','rep_file', 'isPublic', 'allowed_users', 'allowed_groups')

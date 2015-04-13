@@ -55,14 +55,22 @@ def logout(request):
 def reports(request):
 	info = {}
 	if request.method == "POST" and request.user.is_authenticated():
-		info['form'] = ReportForm(request.POST)
-		newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], rep_date=request.POST['rep_date'], keywords=request.POST['keywords'], isPublic=request.POST['isPublic'])
-		if 'file' in request.POST:
-			newReport.file = request.POST['file']
+		info['form'] = ReportForm(request.POST, request.FILES)
+		newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], isPublic=request.POST['isPublic'])
+		if 'rep_file' in request.FILES:
+			f = request.FILES.get('rep_file')
+			newReport.rep_file = f
+		if 'loc' in request.POST:
+			newReport.loc = request.POST['loc']
+		if 'rep_date' in request.POST:
+			newReport.rep_date = request.POST['rep_date']
+		if 'keywords' in request.POST:
+			newReport.keywords = request.POST['keywords']
 		if 'allowed_groups' in request.POST:
 			newReport.allowed_groups = request.POST['allowed_groups']
 		if 'allowed_users' in request.POST:
 			newReport.allowed_users = request.POST['allowed_users']
+		newReport.save()
 	else:
 		info['form'] = ReportForm()
 	if not request.user.is_authenticated():
@@ -90,14 +98,22 @@ def reportinfo(request, pk):
 				report_form.save()	
 			info['form'] = report_form
 		elif 'copy_report' in request.POST:
-			info['form'] = ReportForm(request.POST)
-			newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], rep_date=request.POST['rep_date'], keywords=request.POST['keywords'], isPublic=request.POST['isPublic'])
-			if 'file' in request.POST:
-				newReport.file = request.POST['file']
+			info['form'] = ReportForm(request.POST, request.FILES)
+			newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], isPublic=request.POST['isPublic'])
+			if 'rep_file' in request.FILES:
+				f = request.FILES.get('rep_file')
+				newReport.rep_file = f
+			if 'loc' in request.POST:
+				newReport.loc = request.POST['loc']
+			if 'rep_date' in request.POST:
+				newReport.rep_date = request.POST['rep_date']
+			if 'keywords' in request.POST:
+				newReport.keywords = request.POST['keywords']
 			if 'allowed_groups' in request.POST:
 				newReport.allowed_groups = request.POST['allowed_groups']
 			if 'allowed_users' in request.POST:
 				newReport.allowed_users = request.POST['allowed_users']
+			newReport.save()
 
 	return render(request, 'reportinfo.html', info)
 
@@ -195,7 +211,7 @@ def searchform(request):
     detaild = request.GET.get("type5")
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
-    file = request.GET.get("type8")
+    rep_file = request.GET.get("type8")
     results = ""
     if title:
         if q:
@@ -237,9 +253,9 @@ def searchform(request):
             results = User.objects.none()
         context = dict(results=results, q=q)
         return render(request, "searchform.html", context)
-    elif file:
+    elif rep_file:
         if q:
-            results = Report.objects.filter(file__icontains=q)
+            results = Report.objects.filter(rep_file__icontains=q)
         else:
         # you may want to return Customer.objects.none() instead
             results = User.objects.none()
@@ -270,7 +286,7 @@ def search(request):
     detaild = request.GET.get("type5")
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
-    file = request.GET.get("type8")
+    rep_file = request.GET.get("type8")
     results = ""
     if title:
         if q:
@@ -312,9 +328,9 @@ def search(request):
             results = User.objects.none()
         context = dict(results=results, q=q)
         return render(request, "search.html", context)
-    elif file:
+    elif rep_file:
         if q:
-            results = Report.objects.filter(file__icontains=q)
+            results = Report.objects.filter(rep_file__icontains=q)
         else:
         # you may want to return Customer.objects.none() instead
             results = User.objects.none()
