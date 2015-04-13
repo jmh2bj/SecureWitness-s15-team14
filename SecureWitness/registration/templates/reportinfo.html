@@ -15,7 +15,8 @@
     {{ field.label_tag }}
     {{ field }} <p/>
     {% endfor %}
-    <input type="submit" value="Update Report" />
+    <input type="submit" name="update_report" value="Update Report" />
+    <input type="submit" name="copy_report" value="Copy Report" />
 </form>
 {% if form.errors %}
     {% for field in form %}

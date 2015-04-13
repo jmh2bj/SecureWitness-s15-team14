@@ -78,11 +78,22 @@ def reportinfo(request, pk):
 	else:
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
-		report_form = ReportForm(request.POST)
-		if report_form.is_valid():
-			report_form=ReportForm(request.POST, instance = report)
-			report_form.save()	
-		info['form'] = report_form
+		if 'update_report' in request.POST:
+			report_form = ReportForm(request.POST)
+			if report_form.is_valid():
+				report_form=ReportForm(request.POST, instance = report)
+				report_form.save()	
+			info['form'] = report_form
+		elif 'copy_report' in request.POST:
+			info['form'] = ReportForm(request.POST)
+			newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], rep_date=request.POST['rep_date'], keywords=request.POST['keywords'], isPublic=request.POST['isPublic'])
+			if 'file' in request.POST:
+				newReport.file = request.POST['file']
+			if 'allowed_groups' in request.POST:
+				newReport.allowed_groups = request.POST['allowed_groups']
+			if 'allowed_users' in request.POST:
+				newReport.allowed_users = request.POST['allowed_users']
+
 	return render(request, 'reportinfo.html', info)
 
 def groups(request):
