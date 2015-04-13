@@ -15,8 +15,7 @@
     {{ field.label_tag }}
     {{ field }} <p/>
     {% endfor %}
-    <input type="submit" name="update_report" value="Update Report" />
-    <input type="submit" name="copy_report" value="Copy Report" />
+    <input type="submit" value="Update Folder" />
 </form>
 {% if form.errors %}
     {% for field in form %}
@@ -34,8 +33,14 @@
     {% endfor %}
 {% endif %}
 
-<li><a href="{{ pk }}/delete">Delete Report</a></li>
+{% for folder in folders %}
+<li><a href="/folders/{{ folder.pk }}">{{ folder.name }}</a></li>
+{% endfor %}
+{% for report in reports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a></li>
+{% endfor %}
 
+<li><a href="{{ pk }}/delete">Delete Folder</a></li>
 </body>
 </html>
 
