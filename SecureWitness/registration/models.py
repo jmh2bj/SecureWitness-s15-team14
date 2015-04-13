@@ -4,18 +4,18 @@ from django.forms import ModelForm
 from django.contrib.auth.models import User, Permission, Group
 
 class Report(models.Model):
-	rep_title = models.CharField(max_length=200)
+	rep_title = models.CharField("Report Title", max_length=200)
 	rep_created = models.DateTimeField('date created', auto_now_add=True)
-	short_desc = models.CharField(max_length=200)
-	detailed_desc = models.CharField(max_length=2000)
+	short_desc = models.CharField("Short Description", max_length=200)
+	detailed_desc = models.CharField("Detailed Description", max_length=2000)
 	# location should be a reference to the folders, probably
 	#loc = models.CharField(max_length=200)
-	rep_date = models.DateTimeField('report date')
-	keywords = models.CharField(max_length=500)
+	rep_date = models.DateTimeField('Report date')
+	keywords = models.CharField("Associated Keywords", max_length=500)
 	file = models.FileField(upload_to='reports', blank=True, null=True)
-	isPublic = models.BooleanField(default=True)
-	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True) #individual users granted access to a report
-	allowed_groups = models.ManyToManyField(Group, null=True, blank=True) #groups whose members are granted access to a report
+	isPublic = models.BooleanField("Public Report?" , default=True)
+	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True, verbose_name="Allowed Users") #individual users granted access to a report
+	allowed_groups = models.ManyToManyField(Group, null=True, blank=True, verbose_name="Allowed Groups") #groups whose members are granted access to a report
 	owner = models.ForeignKey(User, null=True)
 
 	def __str__(self):
@@ -36,6 +36,11 @@ class FolderForm(ModelForm):
 	class Meta:
 		model = Folder
 		fields = ('name',)
+
+#class ReportFile(models.Model):
+#	report = models.ForeignKey(Report)
+#	rep_file = models.FileField(upload_to='reports', blank=True, null=True)
+#	isEncrypted = models.BooleanField(default=False)
 
 class UserForm(ModelForm):
 	class Meta:
