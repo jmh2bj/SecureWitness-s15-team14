@@ -39,6 +39,8 @@
 {% for report in reports %}
 <li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a></li>
 {% endfor %}
+
+<li><a href="{{ pk }}/delete">Delete Folder</a></li>
 </body>
 </html>
 

@@ -78,6 +78,7 @@ def reportinfo(request, pk):
 	info = {}
 	if report.owner == request.user:
 		info['form'] = ReportForm(instance=report)
+		info['pk'] = pk
 	else:
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
@@ -87,6 +88,18 @@ def reportinfo(request, pk):
 			report_form.save()	
 		info['form'] = report_form
 	return render(request, 'reportinfo.html', info)
+
+def deletereport(request, pk):
+	report = Report.objects.filter(pk=pk)
+	if report[0].owner == request.user:
+		report.delete()
+	return HttpResponseRedirect('/reports/')
+
+def deletefolder(request, pk):
+	folder = Folder.objects.filter(pk=pk)
+	if folder[0].owner == request.user:
+		folder.delete()
+	return HttpResponseRedirect('/folders/')
 
 def folders(request):
 	info = {}
@@ -110,6 +123,7 @@ def folderinfo(request, pk):
 		info['form'] = FolderForm(instance = folder)
 		info['folders'] = folder.contained_folders.all()
 		info['reports'] = folder.contained_reports.all()
+		info['pk'] = pk
 	else:
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and folder.owner == request.user:
