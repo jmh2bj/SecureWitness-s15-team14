@@ -1,3 +1,5 @@
+import tkinter
+from coverage import data
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
@@ -187,23 +189,67 @@ def groupinfo(request, groupname):
 
 def searchform(request):
     user = request.GET.get("type")
-    report = request.GET.get("type2")
+    report = request.POST.get("type2")
     q = request.GET.get("q")
+    title = request.GET.get("type3")
+    shortd = request.GET.get("type4")
+    detaild = request.GET.get("type5")
+    repd = request.GET.get("type6")
+    key = request.GET.get("type7")
+    file = request.GET.get("type8")
     results = ""
-    if report:
+    if title:
         if q:
-        # you may want to use `__istartswith' instead
-            results = Report.objects.filter(rep_title__istartswith=q)
+            results = Report.objects.filter(rep_title__icontains=q)
         else:
-       # you may want to return Customer.objects.none() instead
-            results = Report.objects.none()
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
         context = dict(results=results, q=q)
         return render(request, "searchform.html", context)
-
+    elif shortd:
+        if q:
+            results = Report.objects.filter(short_desc__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    elif detaild:
+        if q:
+            results = Report.objects.filter(detailed_desc__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    elif repd:
+        if q:
+            results = Report.objects.filter(rep_date__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    elif key:
+        if q:
+            results = Report.objects.filter(keywords__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
+    elif file:
+        if q:
+            results = Report.objects.filter(file__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "searchform.html", context)
     elif user:
         if q:
         # you may want to use `__istartswith' instead
-            results = User.objects.filter(username__istartswith=q)
+            results = User.objects.filter(username__icontains=q)
         else:
         # you may want to return Customer.objects.none() instead
             results = User.objects.none()
@@ -220,21 +266,65 @@ def search(request):
     user = request.GET.get("type")
     report = request.GET.get("type2")
     q = request.GET.get("q")
+    title = request.GET.get("type3")
+    shortd = request.GET.get("type4")
+    detaild = request.GET.get("type5")
+    repd = request.GET.get("type6")
+    key = request.GET.get("type7")
+    file = request.GET.get("type8")
     results = ""
-    if report:
+    if title:
         if q:
-        # you may want to use `__istartswith' instead
-            results = Report.objects.filter(rep_title__istartswith=q)
+            results = Report.objects.filter(rep_title__icontains=q)
         else:
-       # you may want to return Customer.objects.none() instead
-            results = Report.objects.none()
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
         context = dict(results=results, q=q)
         return render(request, "search.html", context)
-
+    elif shortd:
+        if q:
+            results = Report.objects.filter(short_desc__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+    elif detaild:
+        if q:
+            results = Report.objects.filter(detailed_desc__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+    elif repd:
+        if q:
+            results = Report.objects.filter(rep_date__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+    elif key:
+        if q:
+            results = Report.objects.filter(keywords__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
+    elif file:
+        if q:
+            results = Report.objects.filter(file__icontains=q)
+        else:
+        # you may want to return Customer.objects.none() instead
+            results = User.objects.none()
+        context = dict(results=results, q=q)
+        return render(request, "search.html", context)
     elif user:
         if q:
         # you may want to use `__istartswith' instead
-            results = User.objects.filter(username__istartswith=q)
+            results = User.objects.filter(username__icontains=q)
         else:
         # you may want to return Customer.objects.none() instead
             results = User.objects.none()
@@ -243,5 +333,4 @@ def search(request):
     else:
         results = User.objects.none()
         context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    return render(request, "search.html")
+        return render(request, "search.html", context)
