@@ -30,6 +30,12 @@ class Folder(models.Model):
 	def __str__(self):
 		return self.name
 
+class UserRoles(models.Model):
+	class Meta:
+		permissions = [
+            ("admin", "Is a SecureWitness Admin")
+        ]
+
 class FolderForm(ModelForm):
 	folderadd = forms.CharField(max_length=200, required=False)
 	reportadd = forms.CharField(max_length=200, required=False)
