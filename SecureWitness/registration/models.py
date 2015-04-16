@@ -65,3 +65,7 @@ class ReportForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ('rep_title', 'short_desc', 'detailed_desc', 'loc', 'rep_date', 'keywords','rep_file', 'isPublic', 'allowed_users', 'allowed_groups')
+
+class PermissionForm(forms.Form):
+	active = forms.BooleanField()
+	admin = forms.BooleanField()
