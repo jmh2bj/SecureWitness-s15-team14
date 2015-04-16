@@ -8,7 +8,6 @@ class Report(models.Model):
 	rep_created = models.DateTimeField('date created', auto_now_add=True)
 	short_desc = models.CharField("Short Description", max_length=200)
 	detailed_desc = models.CharField("Detailed Description", max_length=2000)
-	# location should be a reference to the folders, probably
 	loc = models.CharField("Location", max_length=200, blank=True)
 	rep_date = models.DateTimeField('Report date', blank=True)
 	keywords = models.CharField("Associated Keywords", max_length=500, blank=True)

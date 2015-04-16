@@ -60,6 +60,22 @@ def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect('login')
 
+def users(request):
+	if request.user.is_authenticated() and request.user.has_perm('registration.admin'):
+		info = {}
+		info['users'] = User.objects.all()
+		return render(request, 'registration/users.html', info)
+	else:
+		return HttpResponseForbidden('forbidden')
+
+def userinfo(request, pk):
+	if request.user.is_authenticated() and request.user.has_perm('registration.admin'):
+		info = {}
+		info['user'] = get_object_or_404(User, pk=pk)
+		return render(request, 'registration/userinfo.html', info)
+	else:
+		return HttpResponseForbidden('forbidden')
+
 def reports(request):
 	info = {}
 	if request.method == "POST" and request.user.is_authenticated():
