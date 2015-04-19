@@ -2,17 +2,23 @@ from coverage import data
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
-from registration.models import UserForm, GroupForm, ReportForm, Report, FolderForm, Folder
+from registration.models import UserForm, GroupForm, ReportForm, Report, FolderForm, Folder, PermissionForm
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 
 def home(request):
-	return add_user(request)
+	return HttpResponseRedirect('/registration/create')
 
 def add_user(request):
 	if request.method == "POST":
 		form = UserForm(request.POST)
 		if form.is_valid():
-			newUser = User.objects.create_user(**form.cleaned_data)
+			users = User.objects.all()
+			if not users.exists():
+				admin = Permission.objects.get(codename='admin')
+				newUser = User.objects.create_user(**form.cleaned_data)
+				newUser.user_permissions = [admin]
+			else:
+				newUser = User.objects.create_user(**form.cleaned_data)
             # redirect, or however you want to get to the main view
 			return HttpResponseRedirect('confirm')
 	else:
@@ -40,17 +46,52 @@ def login(request):
 	return render(request, 'registration/login.html', {'form': form})
 
 def confirm(request):
-	permissions = ""
+	info = {}
+	info['user'] = request.user
 	if not request.user.is_authenticated():
-		permissions = "no user logged in"
+		info['permissions'] = "no user logged in"
 	else:
-		permissions = str(request.user.get_all_permissions())
+		info['admin'] = request.user.has_perm('registration.admin')
+		info['permissions'] = str(request.user.get_all_permissions())
 	
-	return render(request, 'registration/confirm.html', {'permissions': permissions, 'user': request.user})
+	return render(request, 'registration/confirm.html', info)
 
 def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect('login')
+
+def users(request):
+	if request.user.is_authenticated() and request.user.has_perm('registration.admin'):
+		info = {}
+		info['users'] = User.objects.all()
+		return render(request, 'registration/users.html', info)
+	else:
+		return HttpResponseForbidden('forbidden')
+
+def userinfo(request, pk):
+	if request.user.is_authenticated() and request.user.has_perm('registration.admin'):
+		info = {}
+		info['user'] = get_object_or_404(User, pk=pk)
+		if request.method == "POST":
+			if 'admin' in request.POST and not info['user'].has_perm('registration.admin') and request.POST['admin']:
+				admin = Permission.objects.get(codename='admin')
+				info['user'].user_permissions = [admin]
+			elif not 'admin' in request.POST and info['user'].has_perm('registration.admin'):
+				info['user'].user_permissions = []
+			if 'active' in request.POST and not info['user'].is_active and request.POST['active']:
+				info['user'].is_active = request.POST['active']
+			elif not 'active' in request.POST and info['user'].is_active:
+				info['user'].is_active = False
+			info['user'].save()
+			return HttpResponseRedirect(str(pk))
+			#return HttpResponse(str(request.POST['active']) + str(request.POST['admin']))
+		initial = {}
+		initial['active'] = info['user'].is_active
+		initial['admin'] = info['user'].has_perm('registration.admin')
+		info['form'] = PermissionForm(initial=initial)
+		return render(request, 'registration/userinfo.html', info)
+	else:
+		return HttpResponseForbidden('forbidden')
 
 def reports(request):
 	info = {}
@@ -170,13 +211,13 @@ def folderinfo(request, pk):
 	return render(request, 'folderinfo.html', info)
 
 def groups(request):
-	if request.method == "POST" and request.user.is_superuser:
+	if request.method == "POST" and request.user.has_perm('registration.admin'):
 		Group.objects.create(name=request.POST['name'])
 	info = {}
 	if not request.user.is_authenticated():
 		info['groups'] = ["no user logged in"]
 	else:
-		if request.user.is_superuser:
+		if request.user.has_perm('registration.admin'):
 			info['admin'] = True
 			info['groups'] = Group.objects.all()
 			info['form'] = GroupForm()
@@ -186,16 +227,16 @@ def groups(request):
 	return render(request, 'groups.html', info)
 
 def groupinfo(request, groupname):
-	if request.method == "POST" and request.user.is_superuser:
+	if request.method == "POST" and request.user.has_perm('registration.admin'):
 		group = Group.objects.get(name=groupname)
 		newmember = User.objects.get(username=request.POST['username'])
 		newmember.groups.add(group)
 		return HttpResponseRedirect(groupname)
 	else:
 		namedgroup = request.user.groups.filter(name=groupname)
-		if namedgroup.exists() or request.user.is_superuser:
+		if namedgroup.exists() or request.user.has_perm('registration.admin'):
 			info = {}
-			info['admin'] = request.user.is_superuser
+			info['admin'] = request.user.has_perm('registration.admin')
 			info['form'] = UserForm
 			info['groupusers'] = User.objects.filter(groups__name=groupname)
 			return render(request, 'groupinfo.html', info)

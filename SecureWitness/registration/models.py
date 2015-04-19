@@ -8,7 +8,6 @@ class Report(models.Model):
 	rep_created = models.DateTimeField('date created', auto_now_add=True)
 	short_desc = models.CharField("Short Description", max_length=200)
 	detailed_desc = models.CharField("Detailed Description", max_length=2000)
-	# location should be a reference to the folders, probably
 	loc = models.CharField("Location", max_length=200, blank=True)
 	rep_date = models.DateTimeField('Report date', blank=True)
 	keywords = models.CharField("Associated Keywords", max_length=500, blank=True)
@@ -29,6 +28,12 @@ class Folder(models.Model):
 
 	def __str__(self):
 		return self.name
+
+class UserRoles(models.Model):
+	class Meta:
+		permissions = [
+            ("admin", "Is a SecureWitness Admin")
+        ]
 
 class FolderForm(ModelForm):
 	folderadd = forms.CharField(max_length=200, required=False)
@@ -60,3 +65,7 @@ class ReportForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ('rep_title', 'short_desc', 'detailed_desc', 'loc', 'rep_date', 'keywords','rep_file', 'isPublic', 'allowed_users', 'allowed_groups')
+
+class PermissionForm(forms.Form):
+	active = forms.BooleanField()
+	admin = forms.BooleanField()

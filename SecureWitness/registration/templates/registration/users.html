@@ -9,12 +9,11 @@
     <title></title>
 </head>
 <body>
-<p><b> {{user.username}} </b></p>
-<p>Permissions: </p>
-<p> {{ permissions }}</p>
-{% if admin%}
-<p> <a href="/registration/users">Users</a></p>
-{% endif %}
+
+<p>Users: </p>
+{% for user in users %}
+<li><a href="/registration/users/{{ user.pk }}">{{ user.username }}</a></li>
+{% endfor %}
 </body>
 </html>
 
