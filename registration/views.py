@@ -97,7 +97,7 @@ def reports(request):
 	info = {}
 	if request.method == "POST" and request.user.is_authenticated():
 		info['form'] = ReportForm(request.POST, request.FILES)
-		newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'], isPublic=request.POST['isPublic'])
+		newReport = Report.objects.create(owner=request.user, rep_title=request.POST['rep_title'], short_desc=request.POST['short_desc'], detailed_desc=request.POST['detailed_desc'])
 		if 'rep_file' in request.FILES:
 			f = request.FILES.get('rep_file')
 			newReport.rep_file = f
@@ -107,6 +107,10 @@ def reports(request):
 			newReport.rep_date = request.POST['rep_date']
 		if 'keywords' in request.POST:
 			newReport.keywords = request.POST['keywords']
+		if 'isPublic' in request.POST and request.POST['isPublic']:
+			newReport.isPublic = True
+		else:
+			newReport.isPublic = False
 		if 'allowed_groups' in request.POST:
 			newReport.allowed_groups = request.POST['allowed_groups']
 		if 'allowed_users' in request.POST:
