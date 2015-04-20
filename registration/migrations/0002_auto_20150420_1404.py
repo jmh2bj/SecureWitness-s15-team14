@@ -11,9 +11,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
+        migrations.AlterField(
             model_name='report',
-            old_name='file',
-            new_name='rep_file',
+            name='rep_date',
+            field=models.DateTimeField(verbose_name='Report date', blank=True, null=True),
+            preserve_default=True,
         ),
     ]
