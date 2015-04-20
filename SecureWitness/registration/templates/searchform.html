@@ -7,33 +7,27 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script>
+    $(function() {
+        $( "#datepicker" ).datepicker();
+    });
+    </script>
 </head>
 <body>
  <form action="/search/" method="get">
-     <input type="radio" name="type" value="Users"/> Search Users
-        <input type="radio" name="type3" value="Report1"/> Title
-        <input type="radio" name="type4" value="Report2"/> Short Description
-        <input type="radio" name="type5" value="Report3"/> Detailed Description
-        <input type="radio" name="type6" value="Report4"/> Report Date
-        <input type="radio" name="type7" value="Report5"/> Keywords
-        <input type="radio" name="type8" value="Report6"/> Filename
-
-        <input type="text" name="q">
-        <input type="submit" value="Search">
+     <p><input type="text" name="type"/> Search Users</p>
+     <p><input type="text" name="type3"/> Title</p>
+     <p><input type="text" name="type4"/> Short Description</p>
+     <p><input type="text" name="type5"/> Detailed Description</p>
+     <p><input type="text" name= type6 id="datepicker"> Report Date</p>
+     <p><input type="text" name="type7"/> Keywords</p>
+     <p><input type="text" name="type8"/> Filename</p>
+     <p><input type="submit" value="Search"></p>
  </form>
 </body>
 </html>
-
-
-     <select>
-        <option name="type" value="Users"> Search Users</option>
-        <option name="type3" value="Report1"> Report Title</option>
-        <option name="type4" value="Report2"> Short Description</option>
-        <option name="type5" value="Report3"> Detailed Description</option>
-        <option name="type6" value="Report4"> Report Date </option>
-        <option name="type7" value="Report5"> Keywords </option>
-        <option name="type8" value="Report6"> Filename </option>
-     </select>
-
-
 {% endblock %}

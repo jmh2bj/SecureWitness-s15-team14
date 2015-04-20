@@ -14,34 +14,46 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Report',
+            name='Folder',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
-                ('rep_title', models.CharField(max_length=200, verbose_name='Report Title')),
-                ('rep_created', models.DateTimeField(auto_now_add=True, verbose_name='date created')),
-                ('short_desc', models.CharField(max_length=200)),
-                ('detailed_desc', models.CharField(max_length=2000)),
-                ('rep_date', models.DateTimeField(verbose_name='report date')),
-                ('keywords', models.CharField(max_length=500)),
-                ('isPublic', models.BooleanField(default=True)),
-                ('allowed_groups', models.ManyToManyField(null=True, to='auth.Group', blank=True)),
-                ('allowed_users', models.ManyToManyField(null=True, to=settings.AUTH_USER_MODEL, related_name='allowed_users', blank=True)),
-                ('owner', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL)),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
+                ('name', models.CharField(max_length=200)),
+                ('contained_folders', models.ManyToManyField(to='registration.Folder', null=True)),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='ReportFile',
+            name='Report',
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False, auto_created=True, verbose_name='ID')),
-                ('rep_file', models.FileField(null=True, upload_to='reports', blank=True)),
-                ('isEncrypted', models.BooleanField(default=False)),
-                ('report', models.ForeignKey(to='registration.Report')),
+                ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
+                ('rep_title', models.CharField(max_length=200, verbose_name='Report Title')),
+                ('rep_created', models.DateTimeField(verbose_name='date created', auto_now_add=True)),
+                ('short_desc', models.CharField(max_length=200, verbose_name='Short Description')),
+                ('detailed_desc', models.CharField(max_length=2000, verbose_name='Detailed Description')),
+                ('rep_date', models.DateTimeField(verbose_name='Report date')),
+                ('keywords', models.CharField(max_length=500, verbose_name='Associated Keywords')),
+                ('file', models.FileField(blank=True, upload_to='reports', null=True)),
+                ('isPublic', models.BooleanField(default=True, verbose_name='Public Report?')),
+                ('allowed_groups', models.ManyToManyField(blank=True, verbose_name='Allowed Groups', to='auth.Group', null=True)),
+                ('allowed_users', models.ManyToManyField(blank=True, verbose_name='Allowed Users', to=settings.AUTH_USER_MODEL, related_name='allowed_users', null=True)),
+                ('owner', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
             ],
             options={
             },
             bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='folder',
+            name='contained_reports',
+            field=models.ManyToManyField(blank=True, to='registration.Report', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='folder',
+            name='owner',
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            preserve_default=True,
         ),
     ]
