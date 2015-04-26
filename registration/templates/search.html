@@ -12,17 +12,13 @@
 <p>Search Results: </p>
 {% for r in results %}
     {% if title or shortd or detaild or repd or key or file or user %}
-        <ul>
-            <li> {{ r.rep_title }} </li>
+            <li><a href="/reports/{{ r.pk }}">{{ r.rep_title }}</a></li>
                 <p> {{ r.short_desc }}</p>
-        </ul>
     {% endif %}
 
     {% if user %}
-        <ul>
             <li> {{ r.username }} </li>
                 <p> {{ r.email }}</p>
-        </ul>
     {% endif %}
 {% endfor %}
 </body>
