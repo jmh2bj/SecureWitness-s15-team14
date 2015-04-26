@@ -1,3 +1,5 @@
+import os
+from django.core.files.base import ContentFile
 from coverage import data
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
@@ -161,6 +163,15 @@ def reportinfo(request, pk):
 			newReport.save()
 
 	return render(request, 'reportinfo.html', info)
+
+def download(request, filename):
+	path_to_file = os.path.realpath('reports/' + filename)
+	f = open(path_to_file, 'r')
+	myfile = f.read()
+	response = HttpResponse(myfile, content_type='application/force-download')
+	response['Content-Disposition'] = 'attachment; filename=%s' % filename
+	return response
+
 
 def deletereport(request, pk):
 	report = Report.objects.filter(pk=pk)
