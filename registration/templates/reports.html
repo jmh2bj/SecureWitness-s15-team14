@@ -23,7 +23,7 @@
 
 <p>Your Reports: </p>
 {% for report in reports %}
-<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a></li>
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}</li>
 {% endfor %}
 </body>
 </html>
