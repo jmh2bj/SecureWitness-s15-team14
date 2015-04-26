@@ -35,7 +35,8 @@ def login(request):
 			if user.is_active:
 				auth.login(request, user)
 		        # redirect, or however you want to get to the main view
-				return HttpResponseRedirect('confirm')
+				return HttpResponse("logged in")
+				#return HttpResponseRedirect('confirm')
 			else:
 				return HttpResponse('user disabled')
 		else:
@@ -139,10 +140,15 @@ def reportinfo(request, pk):
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
 		if 'update_report' in request.POST:
-			report_form = ReportForm(request.POST)
+			report_form = ReportForm(request.POST, request.FILES)
 			if report_form.is_valid():
-				report_form=ReportForm(request.POST, instance = report)
-				report_form.save()	
+				report_form=ReportForm(request.POST, request.FILES, instance = report)
+				if 'rep_file' in request.FILES:
+					f = request.FILES.get('rep_file')
+					report_form.rep_file = f
+					Report.objects.filter(pk=pk).update(rep_file=f)
+					#return HttpResponse(report_form.rep_file)
+				report_form.save()
 			info['form'] = report_form
 		elif 'copy_report' in request.POST:
 			info['form'] = ReportForm(request.POST, request.FILES)
@@ -160,6 +166,7 @@ def reportinfo(request, pk):
 				newReport.allowed_groups = request.POST['allowed_groups']
 			if 'allowed_users' in request.POST:
 				newReport.allowed_users = request.POST['allowed_users']
+			
 			newReport.save()
 
 	return render(request, 'reportinfo.html', info)
