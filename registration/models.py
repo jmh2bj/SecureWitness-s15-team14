@@ -16,6 +16,7 @@ class Report(models.Model):
 	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True, verbose_name="Allowed Users") #individual users granted access to a report
 	allowed_groups = models.ManyToManyField(Group, null=True, blank=True, verbose_name="Allowed Groups") #groups whose members are granted access to a report
 	owner = models.ForeignKey(User, null=True)
+	views = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.rep_title
@@ -65,6 +66,7 @@ class ReportForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ('rep_title', 'short_desc', 'detailed_desc', 'loc', 'rep_date', 'keywords','rep_file', 'isPublic', 'allowed_users', 'allowed_groups')
+		exclude = ('views',)
 
 class PermissionForm(forms.Form):
 	active = forms.BooleanField()

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<p>Top Reports: </p>
+{% for report in viewedreports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}</li>
+{% endfor %}
+</body>
+</html>
+
+{% endblock %}

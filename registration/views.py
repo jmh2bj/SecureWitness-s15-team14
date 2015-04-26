@@ -7,6 +7,12 @@ from django.contrib.auth.models import Permission, User, Group
 from registration.models import UserForm, GroupForm, ReportForm, Report, FolderForm, Folder, PermissionForm
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 
+def popular(request):
+	info = {}
+	reports = Report.objects.filter(isPublic=True)
+	info['viewedreports'] = reports.order_by('views').reverse()[:5]
+	return render(request, 'popular.html', info)
+
 def home(request):
 	return HttpResponseRedirect('/registration/create')
 
@@ -133,9 +139,11 @@ def reports(request):
 def reportinfo(request, pk):
 	report = get_object_or_404(Report, pk=pk)
 	info = {}
-	if report.owner == request.user:
+	if report.owner == request.user: #check for whenever a user can see it, including if they're allowed, or if they're in a group that's allowed
 		info['form'] = ReportForm(instance=report)
 		info['pk'] = pk
+		report.views = report.views + 1
+		report.save()
 	else:
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
