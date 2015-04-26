@@ -33,7 +33,8 @@ def login(request):
 			if user.is_active:
 				auth.login(request, user)
 		        # redirect, or however you want to get to the main view
-				return HttpResponseRedirect('confirm')
+				return HttpResponse("logged in")
+				#return HttpResponseRedirect('confirm')
 			else:
 				return HttpResponse('user disabled')
 		else:
