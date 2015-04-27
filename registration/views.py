@@ -258,13 +258,14 @@ def searchform(request):
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
     file = request.GET.get("type8")
+    allr = request.GET.get("type9")
 
     results = ""
     result = ""
     results1 = ""
     results2 = ""
 
-    if not (title or shortd or detaild or repd or key or file or user):
+    if not (title or shortd or detaild or repd or key or file or user or allr):
         errors.append('Please Enter a Search Term')
     elif (title or shortd or detaild or repd or key or file):
         result = Report.objects.filter(rep_title__icontains=title).filter(short_desc__icontains=shortd).\
@@ -281,6 +282,12 @@ def searchform(request):
         results = User.objects.filter(username__icontains=user)
         context = dict(results=results, q=user)
         return render(request, "searchform.html", context)
+    elif allr:
+        #reports = Report.objects.get()
+        #context = {'reports': reports}
+        results = Report.objects.filter(isPublic=True)
+        context = dict(results=results, q=results)
+        return render(request, "searchform.html", context)
     return render(request, "searchform.html")
 
 
@@ -294,13 +301,12 @@ def search(request):
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
     file = request.GET.get("type8")
-
+    allr = request.GET.get("type9")
     results = ""
     result = ""
     results1 = ""
     results2 = ""
-
-    if not (title or shortd or detaild or repd or key or file or user):
+    if not (title or shortd or detaild or repd or key or file or user or allr):
         errors.append('Please Enter a Search Term')
     elif (title or shortd or detaild or repd or key or file):
         result = Report.objects.filter(rep_title__icontains=title).filter(short_desc__icontains=shortd).\
@@ -317,5 +323,11 @@ def search(request):
     elif user:
         results = User.objects.filter(username__icontains=user)
         context = dict(results=results, q=user)
+        return render(request, "search.html", context)
+    elif allr:
+        #reports = Report.objects.get()
+        #context = {'reports': reports}
+        results = Report.objects.filter(isPublic=True)
+        context = dict(results=results, q=results)
         return render(request, "search.html", context)
     return render(request, "search.html")
