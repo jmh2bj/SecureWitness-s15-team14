@@ -11,7 +11,22 @@ def popular(request):
 	info = {}
 	reports = Report.objects.filter(isPublic=True)
 	info['viewedreports'] = reports.order_by('views').reverse()[:5]
+	info['likedreports'] = reports.order_by('upvotes').reverse()[:5]
 	return render(request, 'popular.html', info)
+
+def upvote(request, pk):
+	report = get_object_or_404(Report, pk=pk)
+	if report.owner == request.user and not report.upvotes.filter(username=request.user.username): #if user is allowed to see report and hasn't already voted
+		report.upvotes.add(request.user)
+		report.downvotes.remove(request.user)
+	return HttpResponseRedirect('/reports/' + pk)
+
+def downvote(request, pk):
+	report = get_object_or_404(Report, pk=pk)
+	if report.owner == request.user and not report.downvotes.filter(username=request.user.username): #if user is allowed to see report and hasn't already voted
+		report.downvotes.add(request.user)
+		report.upvotes.remove(request.user)
+	return HttpResponseRedirect('/reports/' + pk)
 
 def home(request):
 	return HttpResponseRedirect('/registration/create')
