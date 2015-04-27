@@ -11,22 +11,27 @@ r0 = requests.get(url_login)
 csrftoken = r0.cookies['csrftoken']
 
 #print(csrftoken)
-
-userid = 'admin'
-password = 'admin1'
-
-login_data = {'username':userid,'password':password, 'csrfmiddlewaretoken':csrftoken}
+respcontent = ''
 
 
-resp = requests.post(url_login, data=login_data, cookies=r0.cookies)
+while(not respcontent == 'logged in'):
 
-#print(resp.status_code)
+	userid = input("Username: ")
+	password = input("Password: ")
+
+	login_data = {'username':userid,'password':password, 'csrfmiddlewaretoken':csrftoken}
 
 
-#print(resp.cookies['sessionid'])
+	resp = requests.post(url_login, data=login_data, cookies=r0.cookies)
+
+	respcontent = resp.text
+
+	if(not respcontent == 'logged in'):
+		print("Username and password do not match. Please try again.")
 
 cookies = dict(sessionid=resp.cookies['sessionid'])
 
+print("Log in successful")
 
 #display all reports you have
 r1 = requests.get(base_url + '/reports/', cookies=cookies)
@@ -43,24 +48,58 @@ while('<a href=' in text):
 	start = text.find('>')
 	stop = text.find('</a>')
 	reports[text[start+1:stop]] = url
-	print(url)
-	print(text[start+1:stop])
 	index = text.find('<a href=', index+8)
 	text = text[index:]
-print(reports)
+
+print("Reports:")
+for key in reports:
+	print(key)
+
+while(True):
+	selrep = input("Please select a report: ")
+	if(selrep in reports):
+		break
+	print("That report does not exist.")
 
 #display chosen report
-r2 = requests.get(base_url + '/reports/3', cookies=cookies, stream=True)
+r2 = requests.get(base_url + reports[selrep], cookies=cookies, stream=True)
 
 text = str(r2.text.encode("utf-8"))
+text = text[text.find("<form method="):text.find("</form>")+7]
 
-#download the file, wont work until we fix downloads on actual website
-r3 = requests.get(base_url + '/reports/reports/Self_Reflection.docx', cookies=cookies, stream=True)
+while(not text.find('<label') == -1):
+	field = text[text.find('>', text.find('<label'))+1:text.find("</label>")]
+	if(field == "Public Report?"):
+		break
+	if(field == "Rep file:"):
+		if(text.find("<a href=") == -1):
+			fileexists = False
+		else:
+			fileexists = True
+			value = text[text.find("<a href=")+9:text.find('>', text.find("<a href="))-1]
+			file_path = value
+		text = text[text.find("<input id="):]
+	else:
+		text = text[text.find("<input id="):]
+		if(text.find("<p/>") > text.find('value=')):
+			value = text[text.find('value=')+7:text.find('"', text.find('value=')+8)]
+		else:
+			value = ''
+	text = text[text.find('<p/>'):]
+	print(field + " " + value)
 
-with open('hello.txt', 'wb') as f:
-        for chunk in r3.iter_content(chunk_size=1024): 
-            if chunk: # filter out keep-alive new chunks
-                f.write(chunk)
-                f.flush()
+dlfile = ""
+while(fileexists):
+	dlfile = input("Would you like to download the file? (y or n): ")
+	if(dlfile == 'y' or dlfile == 'n'):
+		break
+	print("Please put y for yes or n for no.")
 
-print(text)
+if(dlfile == 'y'):
+	r3 = requests.get(base_url + '/reports/' + file_path, cookies=cookies, stream=True)
+
+	with open('hello.txt', 'wb') as f:
+		for chunk in r2.iter_content(chunk_size=1024): 
+			if chunk: # filter out keep-alive new chunks
+				f.write(chunk)
+				f.flush()
