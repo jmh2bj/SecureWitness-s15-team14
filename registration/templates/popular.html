@@ -10,9 +10,13 @@
 </head>
 <body>
 
-<p>Top Reports: </p>
+<p>Most Viewed Reports: </p>
 {% for report in viewedreports %}
-<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}</li>
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}, up: {{ report.upvotecount }}, down: {{ report.downvotecount }}</li>
+{% endfor %}
+<p>Top Reports: </p>
+{% for report in likedreports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}, up: {{ report.upvotecount }}, down: {{ report.downvotecount }}</li>
 {% endfor %}
 </body>
 </html>
