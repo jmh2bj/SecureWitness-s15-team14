@@ -302,23 +302,26 @@ def search(request):
     key = request.GET.get("type7")
     file = request.GET.get("type8")
     allr = request.GET.get("type9")
+    loc = request.GET.get("type10")
     results = ""
     result = ""
     results1 = ""
     results2 = ""
-    if not (title or shortd or detaild or repd or key or file or user or allr):
+    result1 = ""
+    if not (title or shortd or detaild or repd or key or file or user or allr or loc):
         errors.append('Please Enter a Search Term')
-    elif (title or shortd or detaild or repd or key or file):
+    elif (title or shortd or detaild or repd or key or file or loc):
         result = Report.objects.filter(rep_title__icontains=title).filter(short_desc__icontains=shortd).\
             filter(detailed_desc__icontains=detaild).filter(rep_date__icontains=repd).\
-            filter(keywords__icontains=key).filter(rep_file__icontains=file)
+            filter(keywords__icontains=key).filter(rep_file__icontains=file).filter(loc__icontains=loc)
         results1 = result.filter(isPublic=True)
         results2 = result.filter(isPublic=False)
         results3 = results2.filter(allowed_users=request.user)
         results4 = results2.filter(owner=request.user)
         results5 = results2.filter(allowed_groups = request.user.groups.all())
         results = list(chain(results1, results3, results4, results5))
-        context = dict(results=results, q=title)
+        context = dict(results=results, title=True, shortd=True, detaild=True, repd=True,
+                       key=True, file=True, loc=True)
         return render(request, "search.html", context)
     elif user:
         results = User.objects.filter(username__icontains=user)
@@ -327,7 +330,12 @@ def search(request):
     elif allr:
         #reports = Report.objects.get()
         #context = {'reports': reports}
-        results = Report.objects.filter(isPublic=True)
-        context = dict(results=results, q=results)
+        result = Report.objects.filter(isPublic=True)
+        result1 = Report.objects.filter(isPublic=False)
+        results3 = result1.filter(allowed_users=request.user)
+        results4 = result1.filter(owner=request.user)
+        results5 = result1.filter(allowed_groups = request.user.groups.all())
+        results = list(chain(result, results3, results4, results5))
+        context = dict(results=results, allr=True)
         return render(request, "search.html", context)
     return render(request, "search.html")
