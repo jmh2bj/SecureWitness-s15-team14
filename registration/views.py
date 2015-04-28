@@ -4,6 +4,8 @@ from django.contrib import auth
 from django.contrib.auth.models import Permission, User, Group
 from registration.models import UserForm, GroupForm, ReportForm, Report, FolderForm, Folder, PermissionForm
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
+from crypt.py import create_private_key, en_crypt, make_key
+import os
 
 def home(request):
 	return HttpResponseRedirect('/registration/create')
@@ -164,8 +166,30 @@ def reportinfo(request, pk):
 				newReport.allowed_groups = request.POST['allowed_groups']
 			if 'allowed_users' in request.POST:
 				newReport.allowed_users = request.POST['allowed_users']
-			
 			newReport.save()
+		elif 'encrypt_file' in request.POST:
+			report_form = ReportForm(request.POST, request.FILES)
+			if 'rep_file' in request.FILES:
+				f = request.FILES.get('rep_file')
+				key_file = f.name + "_key"
+				encfile = f.name + "_enc"
+				key = create_private_key()
+				path_enc = os.path.join(settings.MEDIA_ROOT, 'reports', encfile)
+				path_file = os.path.join(settings.MEDIA_ROOT, 'reports', f.name)
+				path_key = os.path.join(settings.MEDIA_ROOT, 'reports', key_file)
+				en_crypt(path_key, path_enc, path_file)
+				f_enc = open(path_enc, "w+b")
+				report_form.rep_file = f_enc
+				Report.objects.filter(pk=pk).update(rep_file=f_enc)
+				if report_form.is_valid():
+					report_form.save()
+					return HttpResponse("File Encrypted and uploaded")
+				else:
+					return HttpResponse("Form is not valid")
+
+					
+			else:
+				return HttpResponse("No file to encrypt.")
 
 	return render(request, 'reportinfo.html', info)
 
