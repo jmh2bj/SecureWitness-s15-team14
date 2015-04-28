@@ -98,7 +98,7 @@ while(fileexists):
 if(dlfile == 'y'):
 	r3 = requests.get(base_url + '/reports/' + file_path, cookies=cookies, stream=True)
 
-	with open('hello.txt', 'wb') as f:
+	with open(file_path[file_path.find('/')+1:], 'wb') as f:
 		for chunk in r2.iter_content(chunk_size=1024): 
 			if chunk: # filter out keep-alive new chunks
 				f.write(chunk)

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="style.css" />
     <title>SecureWitness</title>
 </head>
 
@@ -17,7 +16,7 @@
             <li><a href="/reports">Reports</a></li>
             <li><a href="/folders">Folders</a></li>
             <li><a href="/searchform">Search</a></li>
-            <li><a href="/popular">Top Pages</a></li>
+            <li><a href="/popular">Top Reports</a></li>
         </ul>
         
     </div>
@@ -33,28 +32,28 @@
 </head>
 <body>
 <form method="post" action="" enctype="multipart/form-data">
-    <input type='hidden' name='csrfmiddlewaretoken' value='S73c78cNl7WCKtGpvhdyA6bD6qJfFBaW' />
+    <input type='hidden' name='csrfmiddlewaretoken' value='ndKQCHlNYmbp7zLgQ48ls2Imf65m3rGw' />
     
     <label for="id_rep_title">Report Title:</label>
-    <input id="id_rep_title" maxlength="200" name="rep_title" type="text" value="a" /> <p/>
+    <input id="id_rep_title" maxlength="200" name="rep_title" type="text" value="random" /> <p/>
     
     <label for="id_short_desc">Short Description:</label>
-    <input id="id_short_desc" maxlength="200" name="short_desc" type="text" value="a" /> <p/>
+    <input id="id_short_desc" maxlength="200" name="short_desc" type="text" value="random" /> <p/>
     
     <label for="id_detailed_desc">Detailed Description:</label>
-    <input id="id_detailed_desc" maxlength="2000" name="detailed_desc" type="text" value="ab" /> <p/>
+    <input id="id_detailed_desc" maxlength="2000" name="detailed_desc" type="text" value="ranomd" /> <p/>
     
     <label for="id_loc">Location:</label>
     <input id="id_loc" maxlength="200" name="loc" type="text" /> <p/>
     
     <label for="id_rep_date">Report date:</label>
-    <input id="id_rep_date" name="rep_date" type="text" value="2005-04-14 00:00:00" /> <p/>
+    <input id="id_rep_date" name="rep_date" type="text" value="1995-02-24 00:00:00" /> <p/>
     
     <label for="id_keywords">Associated Keywords:</label>
     <input id="id_keywords" maxlength="500" name="keywords" type="text" /> <p/>
     
     <label for="id_rep_file">Rep file:</label>
-    Currently: <a href="reports/file_info_XVvIMQ9.txt">reports/file_info_XVvIMQ9.txt</a> <input id="rep_file-clear_id" name="rep_file-clear" type="checkbox" /> <label for="rep_file-clear_id">Clear</label><br />Change: <input id="id_rep_file" name="rep_file" type="file" /> <p/>
+    Currently: <a href="reports/Point_aRv4JQk.java">reports/Point_aRv4JQk.java</a> <input id="rep_file-clear_id" name="rep_file-clear" type="checkbox" /> <label for="rep_file-clear_id">Clear</label><br />Change: <input id="id_rep_file" name="rep_file" type="file" /> <p/>
     
     <label for="id_isPublic">Public Report?</label>
     <input checked="checked" id="id_isPublic" name="isPublic" type="checkbox" /> <p/>
@@ -63,12 +62,10 @@
     <select multiple="multiple" id="id_allowed_users" name="allowed_users">
 <option value="1">admin</option>
 <option value="2">radom</option>
-<option value="3">hello</option>
 </select> <p/>
     
     <label for="id_allowed_groups">Allowed Groups:</label>
     <select multiple="multiple" id="id_allowed_groups" name="allowed_groups">
-<option value="1" selected="selected">folder</option>
 </select> <p/>
     
     <input type="submit" name="update_report" value="Update Report" />
@@ -77,6 +74,9 @@
 
 
 <li><a href="2/delete">Delete Report</a></li>
+
+<li><a href="2/upvote">Upvote</a></li>
+<li><a href="2/downvote">Downvote</a></li>
 
 </body>
 </html>
