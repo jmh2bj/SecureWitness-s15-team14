@@ -341,6 +341,15 @@ def searchform(request):
         return render(request, "searchform.html", context)
     return render(request, "searchform.html")
 
+def visiblereports(request):
+    result = Report.objects.filter(isPublic=True)
+    result1 = Report.objects.filter(isPublic=False)
+    results3 = result1.filter(allowed_users=request.user)
+    results4 = result1.filter(owner=request.user)
+    results5 = result1.filter(allowed_groups = request.user.groups.all())
+    results = list(chain(result, results3, results4, results5))
+    context = dict(results=results, allr=True)
+    return render(request, "visiblereports.html", context)
 
 def search(request):
     errors = []

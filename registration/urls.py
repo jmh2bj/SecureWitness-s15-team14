@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^folders/(?P<pk>[\w]+)/delete', views.deletefolder),
     url(r'^folders/(?P<pk>[\w]+)', views.folderinfo),
     url(r'^popular/$', views.popular),
+    url(r'^visiblereports/$', views.visiblereports),
     (r'^searchform/$', views.searchform),
     (r'^search/$', views.search),
 )

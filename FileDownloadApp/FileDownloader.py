@@ -34,7 +34,7 @@ cookies = dict(sessionid=resp.cookies['sessionid'])
 print("Log in successful")
 
 #display all reports you have
-r1 = requests.get(base_url + '/reports/', cookies=cookies)
+r1 = requests.get(base_url + '/visiblereports', cookies=cookies)
 text = str(r1.text.encode("utf-8"))
 x = text.find('<p>Your Reports: </p>')
 text = text[x:]
