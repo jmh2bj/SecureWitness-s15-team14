@@ -10,19 +10,12 @@
 </head>
 <body>
 
-{% if user %}
-<form method="post" action="" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% for field in form %}
-    {{ field.label_tag }}
-    {{ field }} <p/>
-    {% endfor %}
-    <input type="submit" value="Create new report" />
-</form>
-{% endif %}
-
-<p>Your Reports: </p>
-{% for report in reports %}
+<p>Most Viewed Reports: </p>
+{% for report in viewedreports %}
+<li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}, up: {{ report.upvotecount }}, down: {{ report.downvotecount }}</li>
+{% endfor %}
+<p>Top Reports: </p>
+{% for report in likedreports %}
 <li><a href="/reports/{{ report.pk }}">{{ report.rep_title }}</a>, views: {{report.views}}, up: {{ report.upvotecount }}, down: {{ report.downvotecount }}</li>
 {% endfor %}
 </body>

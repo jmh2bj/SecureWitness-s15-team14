@@ -15,10 +15,22 @@ class Report(models.Model):
 	isPublic = models.BooleanField("Public Report?" , default=True)	
 	allowed_users = models.ManyToManyField(User, related_name="allowed_users", null=True, blank=True, verbose_name="Allowed Users") #individual users granted access to a report
 	allowed_groups = models.ManyToManyField(Group, null=True, blank=True, verbose_name="Allowed Groups") #groups whose members are granted access to a report
+	upvotes = models.ManyToManyField(User, related_name="upvotes", null=True, blank=True, verbose_name="Users who have upvoted this report")
+	downvotes = models.ManyToManyField(User, related_name="downvotes", null=True, blank=True, verbose_name="Users who have downvoted this report")
 	owner = models.ForeignKey(User, null=True)
+	views = models.IntegerField(default=0)
 
 	def __str__(self):
 		return self.rep_title
+
+	@property
+	def upvotecount(self):
+	    return self.upvotes.count ()
+
+	@property
+	def downvotecount(self):
+	    return self.downvotes.count ()
+	
 
 class Folder(models.Model):
 	name = models.CharField(max_length=200)
@@ -65,6 +77,7 @@ class ReportForm(ModelForm):
 	class Meta:
 		model = Report
 		fields = ('rep_title', 'short_desc', 'detailed_desc', 'loc', 'rep_date', 'keywords','rep_file', 'isPublic', 'allowed_users', 'allowed_groups')
+		exclude = ('views',)
 
 class PermissionForm(forms.Form):
 	active = forms.BooleanField()

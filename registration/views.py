@@ -1,3 +1,6 @@
+import os
+from django.core.files.base import ContentFile
+from itertools import chain
 from coverage import data
 from django.shortcuts import render, get_object_or_404
 from django.contrib import auth
@@ -6,6 +9,37 @@ from registration.models import UserForm, GroupForm, ReportForm, Report, FolderF
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from crypt.py import create_private_key, en_crypt, make_key
 import os
+
+def userAllowed(user, report):
+	if report.isPublic: return True
+	elif report.allowed_users.filter(username=user.username).exists(): return True
+	elif report.owner == user: return True
+	for i in report.allowed_groups.all():
+		if user.groups.filter(name=i.name).exists(): return True
+	return False
+
+def popular(request):
+	info = {}
+	reports = Report.objects.filter(isPublic=True)
+	info['viewedreports'] = reports.order_by('views').reverse()[:5]
+	info['likedreports'] = sorted(list(reports), key=lambda x: x.upvotecount)
+	info['likedreports'].reverse()
+	info['likedreports'] = info['likedreports'][:5]
+	return render(request, 'popular.html', info)
+
+def upvote(request, pk):
+	report = get_object_or_404(Report, pk=pk)
+	if userAllowed(request.user, report) and not report.upvotes.filter(username=request.user.username): #if user is allowed to see report and hasn't already voted
+		report.upvotes.add(request.user)
+		report.downvotes.remove(request.user)
+	return HttpResponseRedirect('/reports/' + pk)
+
+def downvote(request, pk):
+	report = get_object_or_404(Report, pk=pk)
+	if userAllowed(request.user, report) and not report.downvotes.filter(username=request.user.username): #if user is allowed to see report and hasn't already voted
+		report.downvotes.add(request.user)
+		report.upvotes.remove(request.user)
+	return HttpResponseRedirect('/reports/' + pk)
 
 def home(request):
 	return HttpResponseRedirect('/registration/create')
@@ -133,9 +167,11 @@ def reports(request):
 def reportinfo(request, pk):
 	report = get_object_or_404(Report, pk=pk)
 	info = {}
-	if report.owner == request.user:
+	if userAllowed(request.user, report): #check for whenever a user can see it, including if they're allowed, or if they're in a group that's allowed
 		info['form'] = ReportForm(instance=report)
 		info['pk'] = pk
+		report.views = report.views + 1
+		report.save()
 	else:
 		return HttpResponseForbidden("forbidden")
 	if request.method == "POST" and request.user.is_authenticated() and report.owner == request.user:
@@ -192,6 +228,15 @@ def reportinfo(request, pk):
 				return HttpResponse("No file to encrypt.")
 
 	return render(request, 'reportinfo.html', info)
+
+def download(request, filename):
+	path_to_file = os.path.realpath('reports/' + filename)
+	f = open(path_to_file, 'r')
+	myfile = f.read()
+	response = HttpResponse(myfile, content_type='application/force-download')
+	response['Content-Disposition'] = 'attachment; filename=%s' % filename
+	return response
+
 
 def deletereport(request, pk):
 	report = Report.objects.filter(pk=pk)
@@ -279,149 +324,102 @@ def groupinfo(request, groupname):
 			return HttpResponseForbidden("forbidden")
 
 def searchform(request):
+    errors = []
     user = request.GET.get("type")
-    report = request.POST.get("type2")
     q = request.GET.get("q")
     title = request.GET.get("type3")
     shortd = request.GET.get("type4")
     detaild = request.GET.get("type5")
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
-    rep_file = request.GET.get("type8")
+    file = request.GET.get("type8")
+    allr = request.GET.get("type9")
+
     results = ""
-    if title:
-        if q:
-            results = Report.objects.filter(rep_title__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    elif shortd:
-        if q:
-            results = Report.objects.filter(short_desc__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    elif detaild:
-        if q:
-            results = Report.objects.filter(detailed_desc__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    elif repd:
-        if q:
-            results = Report.objects.filter(rep_date__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    elif key:
-        if q:
-            results = Report.objects.filter(keywords__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "searchform.html", context)
-    elif rep_file:
-        if q:
-            results = Report.objects.filter(rep_file__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
+    result = ""
+    results1 = ""
+    results2 = ""
+
+    if not (title or shortd or detaild or repd or key or file or user or allr):
+        errors.append('Please Enter a Search Term')
+    elif (title or shortd or detaild or repd or key or file):
+        result = Report.objects.filter(rep_title__icontains=title).filter(short_desc__icontains=shortd).\
+            filter(detailed_desc__icontains=detaild).filter(rep_date__icontains=repd).\
+            filter(keywords__icontains=key).filter(rep_file__icontains=file)
+        results1 = result.filter(isPublic=True)
+        results2 = result.filter(isPublic=False)
+        results3 = results2.filter(allowed_users=request.user).filter(owner=request.user)
+        results4 = [r for r in request.user.groups.all() if r in results2.allowed_users.all()]
+        results = list(chain(results1, results3, results4))
+        context = dict(results=results, q=title)
         return render(request, "searchform.html", context)
     elif user:
-        if q:
-        # you may want to use `__istartswith' instead
-            results = User.objects.filter(username__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
+        results = User.objects.filter(username__icontains=user)
+        context = dict(results=results, q=user)
         return render(request, "searchform.html", context)
-    else:
-        results = User.objects.none()
-        context = dict(results=results, q=q)
+    elif allr:
+        #reports = Report.objects.get()
+        #context = {'reports': reports}
+        results = Report.objects.filter(isPublic=True)
+        context = dict(results=results, q=results)
         return render(request, "searchform.html", context)
+    return render(request, "searchform.html")
 
-
+def visiblereports(request):
+    result = Report.objects.filter(isPublic=True)
+    result1 = Report.objects.filter(isPublic=False)
+    results3 = result1.filter(allowed_users=request.user)
+    results4 = result1.filter(owner=request.user)
+    results5 = result1.filter(allowed_groups = request.user.groups.all())
+    results = list(chain(result, results3, results4, results5))
+    context = dict(results=results, allr=True)
+    return render(request, "visiblereports.html", context)
 
 def search(request):
+    errors = []
     user = request.GET.get("type")
-    report = request.GET.get("type2")
     q = request.GET.get("q")
     title = request.GET.get("type3")
     shortd = request.GET.get("type4")
     detaild = request.GET.get("type5")
     repd = request.GET.get("type6")
     key = request.GET.get("type7")
-    rep_file = request.GET.get("type8")
+    file = request.GET.get("type8")
+    allr = request.GET.get("type9")
+    loc = request.GET.get("type10")
     results = ""
-    if title:
-        if q:
-            results = Report.objects.filter(rep_title__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "search.html", context)
-    elif shortd:
-        if q:
-            results = Report.objects.filter(short_desc__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "search.html", context)
-    elif detaild:
-        if q:
-            results = Report.objects.filter(detailed_desc__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "search.html", context)
-    elif repd:
-        if q:
-            results = Report.objects.filter(rep_date__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "search.html", context)
-    elif key:
-        if q:
-            results = Report.objects.filter(keywords__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
-        return render(request, "search.html", context)
-    elif rep_file:
-        if q:
-            results = Report.objects.filter(rep_file__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
+    result = ""
+    results1 = ""
+    results2 = ""
+    result1 = ""
+    if not (title or shortd or detaild or repd or key or file or user or allr or loc):
+        errors.append('Please Enter a Search Term')
+    elif (title or shortd or detaild or repd or key or file or loc):
+        result = Report.objects.filter(rep_title__icontains=title).filter(short_desc__icontains=shortd).\
+            filter(detailed_desc__icontains=detaild).filter(rep_date__icontains=repd).\
+            filter(keywords__icontains=key).filter(rep_file__icontains=file).filter(loc__icontains=loc)
+        results1 = result.filter(isPublic=True)
+        results2 = result.filter(isPublic=False)
+        results3 = results2.filter(allowed_users=request.user)
+        results4 = results2.filter(owner=request.user)
+        results5 = results2.filter(allowed_groups = request.user.groups.all())
+        results = list(chain(results1, results3, results4, results5))
+        context = dict(results=results, title=True, shortd=True, detaild=True, repd=True,
+                       key=True, file=True, loc=True)
         return render(request, "search.html", context)
     elif user:
-        if q:
-        # you may want to use `__istartswith' instead
-            results = User.objects.filter(username__icontains=q)
-        else:
-        # you may want to return Customer.objects.none() instead
-            results = User.objects.none()
-        context = dict(results=results, q=q)
+        results = User.objects.filter(username__icontains=user)
+        context = dict(results=results, q=user)
         return render(request, "search.html", context)
-    else:
-        results = User.objects.none()
-        context = dict(results=results, q=q)
+    elif allr:
+        #reports = Report.objects.get()
+        #context = {'reports': reports}
+        result = Report.objects.filter(isPublic=True)
+        result1 = Report.objects.filter(isPublic=False)
+        results3 = result1.filter(allowed_users=request.user)
+        results4 = result1.filter(owner=request.user)
+        results5 = result1.filter(allowed_groups = request.user.groups.all())
+        results = list(chain(result, results3, results4, results5))
+        context = dict(results=results, allr=True)
         return render(request, "search.html", context)
+    return render(request, "search.html")
